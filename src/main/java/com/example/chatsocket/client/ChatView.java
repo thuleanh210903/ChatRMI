@@ -41,6 +41,7 @@ public class ChatView extends JFrame implements Runnable{
         this.server = server;
         this.name = name;
 
+
         if (authorization != null && authorization.equals("Administrator")) {
             System.out.print(authorization);
             listConnect.setComponentPopupMenu(jPopupMenu1);
@@ -126,6 +127,7 @@ public class ChatView extends JFrame implements Runnable{
             }
         };
         minuteur.schedule(tache,0,20000);
+        this.setVisible(true);
     }
 
 
