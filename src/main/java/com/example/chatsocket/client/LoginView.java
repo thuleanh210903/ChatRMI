@@ -121,10 +121,11 @@ public class LoginView extends JFrame {
             String username = usernameTextField.getText();
             String password = passwordTextField.getText();
 
-            if (!username.equals("") && !username.contains(" ")) {
+            if (!username.equals("") && !username.contains(" ") && !password.equals("") && !password.contains(" ")) {
                 if (server.checkLogin(username, password)) {
-                    JOptionPane.showMessageDialog(this, "User register successfully");
-                    new ChatView(username, (String) jComboBox1.getSelectedItem(), server);
+                    JOptionPane.showMessageDialog(this, "User login successfully");
+                    openChatView(username);
+
                     this.dispose();
                 } else {
                     JOptionPane.showMessageDialog(new JFrame(), "Invalid username or password", "Alert", JOptionPane.WARNING_MESSAGE);
@@ -137,6 +138,13 @@ public class LoginView extends JFrame {
             JOptionPane.showMessageDialog(this, "Error! A RemoteException occurred in the server.\n\nTry to:\n- Restart the server\n- Change the port", "Alert", JOptionPane.WARNING_MESSAGE);
             System.out.println("Error: " + ex.getMessage());
         }
+    }
+
+    private void openChatView(String username) {
+        SwingUtilities.invokeLater(() -> {
+            new ChatView(username, (String) jComboBox1.getSelectedItem(), server);
+            this.dispose();
+        });
     }
 
     private void jTextField1ActionPerformed(ActionEvent evt) {

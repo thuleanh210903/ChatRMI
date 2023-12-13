@@ -20,7 +20,6 @@ public class ConnectDatabase {
         if(conn == null){
             try{
                 conn = DriverManager.getConnection(url, user, password);
-                System.out.println("Connected to MySQL Database");
             }catch (SQLException e){
                 System.out.println("Failed "+ e.getMessage());
             }
@@ -85,7 +84,6 @@ public class ConnectDatabase {
                 String hashedPasswordFromDatabase = resultSet.getString("password");
                 if (checkPassword(enteredPassword, hashedPasswordFromDatabase)) {
                     success = true;
-
                 } else {
                     JOptionPane.showMessageDialog(null, "Username or password is not valid");
                 }
@@ -94,12 +92,14 @@ public class ConnectDatabase {
             }
 
             preparedStatement.close();
-            freeConnection();
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            // Do not call freeConnection() here
         }
         return success;
     }
+
 
     private static boolean checkPassword(String plainTextPassword, String hashedPassword) {
         return hashPassword(plainTextPassword).equals(hashedPassword);
