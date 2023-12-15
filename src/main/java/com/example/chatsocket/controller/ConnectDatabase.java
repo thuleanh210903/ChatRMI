@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -103,6 +104,42 @@ public class ConnectDatabase {
 
     private static boolean checkPassword(String plainTextPassword, String hashedPassword) {
         return hashPassword(plainTextPassword).equals(hashedPassword);
+    }
+
+    //message
+    public static void sendMessage(String message, String senderName, String receiverName, String type) {
+        try {
+            Statement statement = getConnection().createStatement();
+            Date date = new Date();
+            Timestamp timestamp = new Timestamp(date.getTime());
+            int senderId = getUserIdByName(senderName);
+            int receiverId = getUserIdByName(receiverName);
+            statement.executeUpdate("INSERT INTO message(senderId,receiverId,content,timeStamp) VALUES ('" + senderId + "','"
+                    + receiverId + "','" + message + "','" + timestamp + "')");
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static int getUserIdByName(String name) {
+        int userId = -1; //no user can be found
+        try{
+            Statement statement = getConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT user_id FROM user WHERE username = '"+name+"'");
+
+            if(resultSet.next()) {
+                userId = resultSet.getInt("user_id");
+
+            }
+
+            resultSet.close();
+            statement.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return userId;
+
     }
 
 }

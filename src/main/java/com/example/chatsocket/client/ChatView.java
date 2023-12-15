@@ -105,7 +105,7 @@ public class ChatView extends JFrame implements Runnable{
             System.out.println("Error: " + ex.getMessage());
         }
 
-        //timer pour a chaque 20s va actualiser la liste des clients connectes
+
         Timer minuteur = new Timer();
         TimerTask tache = new TimerTask() {
             @Override
@@ -316,7 +316,7 @@ public class ChatView extends JFrame implements Runnable{
     }
 
     //send message
-    private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
+    private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {
         if(!inputMsg.getText().equals("")){
             if(!inputMsg.getText().equals("Enter you Message ...")){
                 client.sendMessage(listConnect.getSelectedValuesList());

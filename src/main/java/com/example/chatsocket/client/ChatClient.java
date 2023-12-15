@@ -101,10 +101,47 @@ public class ChatClient extends UnicastRemoteObject implements InterfaceClient{
     }
 
 
+//    @Override
+//    public void sendMessage(List<String> list) {
+//        try {
+//            String message = name + " : " + input.getText();
+//            String senderName = name;
+////            server.broadcastMessage(name + " : " + input.getText(),list);
+//
+//            for (String recipient: list) {
+//                String recipientName = recipient;
+//
+//                if(senderName != null && recipientName !=null) {
+//                    server.broadcastMessage(senderName + " : " + message, list);
+//                    ConnectDatabase.sendMessage(message, senderName, recipientName, "private");
+//                }
+//            }
+//        } catch (RemoteException ex) {
+//            System.out.println("Error: " + ex.getMessage());
+//        }
+//    }
+
     @Override
     public void sendMessage(List<String> list) {
         try {
-            server.broadcastMessage(name + " : " + input.getText(),list);
+            String message = name + " : " + input.getText();
+            String senderName = name;
+
+            if (senderName != null) {
+                if (list.isEmpty()) {
+                    // Gửi tin nhắn đến tất cả client kết nối
+                    server.broadcastMessage(senderName + " : " + message, null);
+                } else {
+                    // Gửi tin nhắn chỉ đến các client được chọn
+                    server.broadcastMessage(senderName + " : " + message, list);
+                }
+
+                // Lưu thông điệp vào cơ sở dữ liệu cho từng người nhận
+                for (String recipient : list) {
+                    String recipientName = recipient;
+                    ConnectDatabase.sendMessage(message, senderName, recipientName, "private");
+                }
+            }
         } catch (RemoteException ex) {
             System.out.println("Error: " + ex.getMessage());
         }
