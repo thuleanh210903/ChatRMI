@@ -1,6 +1,7 @@
 package com.example.chatsocket.client;
 
 import com.example.chatsocket.controller.ConnectDatabase;
+import com.example.chatsocket.model.Group;
 import com.example.chatsocket.model.User;
 import com.example.chatsocket.server.InterfaceServer;
 
@@ -11,6 +12,7 @@ import java.awt.event.MouseListener;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -123,18 +125,28 @@ public class ChatClient extends UnicastRemoteObject implements InterfaceClient{
 
     @Override
     public void sendMessage(List<String> list) {
-        try {
-            String message = name + " : " + input.getText();
+        try
+        {
+            String message =  input.getText();
             String senderName = name;
 
             if (senderName != null) {
                 if (list.isEmpty()) {
+                    List<String> listAllUser = server.getListClientByName(name);
+
+                    for(String recipient: listAllUser) {
+                        String recipientName = recipient;
+                        ConnectDatabase.sendMessage(message, senderName, recipientName, "private");
+                    }
                     // Gửi tin nhắn đến tất cả client kết nối
                     server.broadcastMessage(senderName + " : " + message, null);
                 } else {
                     // Gửi tin nhắn chỉ đến các client được chọn
                     server.broadcastMessage(senderName + " : " + message, list);
                 }
+
+                // debug k thì println cái này server.getListClientByName(name) xem nó ra cái gì Thư
+
 
                 // Lưu thông điệp vào cơ sở dữ liệu cho từng người nhận
                 for (String recipient : list) {
@@ -145,6 +157,12 @@ public class ChatClient extends UnicastRemoteObject implements InterfaceClient{
         } catch (RemoteException ex) {
             System.out.println("Error: " + ex.getMessage());
         }
+    }
+
+
+    @Override
+    public void createGroup(Group group) throws RemoteException{
+        ConnectDatabase.createGroup(group.getGroupName());
     }
 
 

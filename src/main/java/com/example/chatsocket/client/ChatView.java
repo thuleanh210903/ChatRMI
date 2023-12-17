@@ -2,9 +2,8 @@ package com.example.chatsocket.client;
 
 import com.example.chatsocket.server.InterfaceServer;
 
-import java.awt.Color;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
@@ -16,12 +15,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
-import javax.swing.DefaultListModel;
-import javax.swing.GroupLayout;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileSystemView;
 
@@ -148,12 +142,12 @@ public class ChatView extends JFrame implements Runnable{
         jScrollPane3 = new javax.swing.JScrollPane();
         listMessage = new javax.swing.JTextArea();
         jLabel2 = new JLabel();
-        jButton1 = new javax.swing.JButton();
+        refreshBtn = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new JLabel();
-
+        addGroupBtn = new JButton();
         jMenuItem1.setText("Remove Users");
         jMenuItem1.setActionCommand("");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -217,16 +211,28 @@ public class ChatView extends JFrame implements Runnable{
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
         jLabel2.setText("Connected Clients");
 
-        jButton1.setText("Refresh");
-        jButton1.setActionCommand("");
-        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        refreshBtn.setText("Refresh");
+        refreshBtn.setActionCommand("");
+        refreshBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        refreshBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                refreshBtnActionPerformed(evt);
             }
         });
 
-//        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("img/file-upload.png"))); // NOI18N
+
+        addGroupBtn.setText("Create group");
+        addGroupBtn.setActionCommand("");
+        addGroupBtn.setCursor(new java.awt.Cursor(Cursor.HAND_CURSOR));
+        addGroupBtn.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addGroupBtnActionPerform(e);
+            }
+        });
+
+        jButton3.setIcon(new javax.swing.ImageIcon("E:/projects/ChatSocket/src/main/java/com/example/chatsocket/client/img/file-upload.png"));
+        // NOI18N
         jButton3.setToolTipText("upload File");
         jButton3.setBorderPainted(false);
         jButton3.setContentAreaFilled(false);
@@ -282,7 +288,8 @@ public class ChatView extends JFrame implements Runnable{
                                                 .addGap(8, 8, 8)
                                                 .addComponent(jLabel2))
                                         .addComponent(jScrollPane1)
-                                        .addComponent(jButton1, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                                        .addComponent(refreshBtn, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                                        .addComponent(addGroupBtn, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
                                         .addComponent(btnSend, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap(42, Short.MAX_VALUE))
         );
@@ -296,7 +303,9 @@ public class ChatView extends JFrame implements Runnable{
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jButton1))
+                                                .addComponent(refreshBtn)
+                                                .addComponent(addGroupBtn)
+                                        )
                                         .addComponent(jScrollPane3, GroupLayout.PREFERRED_SIZE, 296, GroupLayout.PREFERRED_SIZE))
                                 .addGap(16, 16, 16)
                                 .addComponent(jLabel1)
@@ -315,6 +324,13 @@ public class ChatView extends JFrame implements Runnable{
         setLocationRelativeTo(null);
     }
 
+    private void addGroupBtnActionPerform(ActionEvent e) {
+        AddGroupView addGroupView = new AddGroupView();
+        // Hiển thị AddGroupView
+        addGroupView.setVisible(true);
+
+    }
+
     //send message
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {
         if(!inputMsg.getText().equals("")){
@@ -330,7 +346,7 @@ public class ChatView extends JFrame implements Runnable{
     }
 
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+    private void refreshBtnActionPerformed(java.awt.event.ActionEvent evt) {
         Thread thread = new Thread(this);
         thread.start();
     }
@@ -415,7 +431,8 @@ public class ChatView extends JFrame implements Runnable{
 
     private javax.swing.JButton btnSend;
     private javax.swing.JTextArea inputMsg;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton refreshBtn;
+    private javax.swing.JButton addGroupBtn;
     private javax.swing.JButton jButton3;
     private JLabel jLabel1;
     private JLabel jLabel2;

@@ -1,5 +1,6 @@
 package com.example.chatsocket.client;
 
+import com.example.chatsocket.model.Group;
 import com.example.chatsocket.model.User;
 
 import java.rmi.Remote;
@@ -10,6 +11,8 @@ import java.util.List;
 
 public interface InterfaceClient extends Remote{
     void registerUser(User user) throws RemoteException;
+
+    void createGroup(Group group) throws RemoteException;
 
     void retrieveMessage(String message) throws RemoteException;
 

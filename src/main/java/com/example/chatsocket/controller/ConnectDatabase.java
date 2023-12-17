@@ -7,7 +7,9 @@ import java.rmi.RemoteException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -140,6 +142,50 @@ public class ConnectDatabase {
         }
         return userId;
 
+    }
+
+    public static boolean createGroup(String groupName) {
+        boolean ck = false;
+        try {
+            Statement statement = getConnection().createStatement();
+            ResultSet result = statement.executeQuery("SELECT * FROM `group` WHERE groupName='" + groupName + "'");
+            if (result.next()) {
+                JOptionPane.showMessageDialog(null, "This group is already created.");
+            } else {
+                Statement statement2 = getConnection().createStatement();
+                statement2.executeUpdate("INSERT INTO `group` (groupName) VALUES ('" + groupName + "')");
+                statement2.close();
+                JOptionPane.showMessageDialog(null, "Creation successful. Please add members!");
+                ck = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ck;
+    }
+
+
+    public static List<String> getAllUsernames() {
+        List<String> usernames = new ArrayList<>();
+        try {
+            Connection connection = getConnection();
+
+            Statement statement = connection.createStatement();
+            String query = "SELECT username FROM user";
+
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                String username = resultSet.getString("username");
+                usernames.add(username);
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return usernames;
     }
 
 }
