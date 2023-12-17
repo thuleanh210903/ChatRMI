@@ -43,7 +43,8 @@ public class ChatView extends JFrame implements Runnable{
 
         this.setLocationRelativeTo(null);
         this.setTitle("Chat (" + name + ")");
-//        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("img/chat.jpg")));
+        ImageIcon iconChat = new ImageIcon("img/chat.jpg");
+        setIconImage(iconChat.getImage());
 
         groupLayout = new GroupLayout(jPanel1);
         jPanel1.setLayout(new GridLayout(100,1));
@@ -231,7 +232,7 @@ public class ChatView extends JFrame implements Runnable{
             }
         });
 
-        jButton3.setIcon(new javax.swing.ImageIcon("E:/projects/ChatSocket/src/main/java/com/example/chatsocket/client/img/file-upload.png"));
+        jButton3.setIcon(new ImageIcon("img/file-upload.png"));
         // NOI18N
         jButton3.setToolTipText("upload File");
         jButton3.setBorderPainted(false);

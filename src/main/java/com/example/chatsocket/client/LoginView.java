@@ -16,8 +16,8 @@ public class LoginView extends JFrame {
     public LoginView() {
         initComponents();
         this.setLocationRelativeTo(null);
-//        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("login.png")));
-
+        ImageIcon iconLogin = new ImageIcon("img/login.png");
+        setIconImage(iconLogin.getImage());
 
         try {
             server = (InterfaceServer) Naming.lookup("rmi://localhost:4321/remote");
