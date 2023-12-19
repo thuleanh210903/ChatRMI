@@ -27,7 +27,7 @@ public class RegisterView extends JFrame{
             server = (InterfaceServer) Naming.lookup("rmi://localhost:4321/remote");
             clientServer = new ChatClient("YourClientName", server, new JTextArea(), new JTextArea(), new JPanel());
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
-            ex.printStackTrace(); // Print the stack trace for debugging
+            ex.printStackTrace();
             System.out.println("Error: " + ex.getMessage());
         }
     }
@@ -127,6 +127,7 @@ public class RegisterView extends JFrame{
                 User user = new User(username, password);
                 clientServer.registerUser(user);
                 JOptionPane.showMessageDialog(this, "User register successfully");
+                new LoginView();
         }catch (RemoteException ex){
             Logger.getLogger(RegisterView.class.getName()).log(Level.SEVERE, null, ex);
 

@@ -26,8 +26,6 @@ public class AddMemberView extends JFrame implements Runnable {
     private GroupLayout groupLayout;
 
 
-    // Thêm dòng này để khai báo nút thêm thành viên
-
     public AddMemberView(String groupName, InterfaceClient clientServer) {
         initComponents();
 

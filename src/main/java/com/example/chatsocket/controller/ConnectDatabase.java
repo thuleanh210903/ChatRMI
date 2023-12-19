@@ -52,7 +52,6 @@ public class ConnectDatabase {
                 Statement statement2 = getConnection().createStatement();
                 statement2.executeUpdate("INSERT INTO user(username, password) VALUES ('" + username + "', '" + hashedPassword + "')");
                 statement2.close();
-                JOptionPane.showMessageDialog(null, "Registration successful. Please log in!");
                 ck = true;
             }
         } catch (SQLException e) {
@@ -178,8 +177,6 @@ public class ConnectDatabase {
                     // Insert the adminGroup into the group_member table
                     String insertQuery = "INSERT INTO `group_member` (groupId, user_id, joinedAt, admin) VALUES (" + groupId + ", '" + userId + "', '" + joinedAt + "',1)";
                     statement.executeUpdate(insertQuery);
-
-                    JOptionPane.showMessageDialog(null, "Creation successful. Please add members!");
                     success = true;
                 }
             }
@@ -226,7 +223,7 @@ public class ConnectDatabase {
                 Date date = new Date();
                 Timestamp joinedAt = new Timestamp(date.getTime());
                 Statement statement2 = getConnection().createStatement();
-                statement2.executeUpdate("INSERT INTO group_member(groupId,user_id,joinedAt) VALUES ('" + groupId + "', '" + userId + "', '" + joinedAt + "')");
+                statement2.executeUpdate("INSERT INTO group_member(groupId,user_id,joinedAt,admin) VALUES ('" + groupId + "', '" + userId + "', '" + joinedAt + "', 0)");
                 statement2.close();
                 JOptionPane.showMessageDialog(null, "Registration successful. Please log in!");
                 ck = true;

@@ -114,10 +114,8 @@ public class AddGroupView extends JFrame {
             Group group = new Group(nameGroup);
             clientServer.createGroup(group, adminGroup);
             JOptionPane.showMessageDialog(this, "Create Group successfully");
-
             AddMemberView addMemberView = new AddMemberView(nameGroup, clientServer);
-            addMemberView.setVisible(true);
-
+            dispose();
         } catch (Exception ex) {
             Logger.getLogger(AddGroupView.class.getName()).log(Level.SEVERE,null,ex);
             JOptionPane.showMessageDialog(this, "Error"+ ex.getMessage());
