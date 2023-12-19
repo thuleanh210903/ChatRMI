@@ -1,11 +1,20 @@
 package com.example.chatsocket.client;
 
+import com.example.chatsocket.controller.ConnectDatabase;
 import com.example.chatsocket.server.InterfaceServer;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class AddMemberView extends JFrame implements Runnable {
     private ChatClient client;
@@ -15,10 +24,13 @@ public class AddMemberView extends JFrame implements Runnable {
     private Vector<String> listClients;
     private String groupName;
     private GroupLayout groupLayout;
+
+
     // Thêm dòng này để khai báo nút thêm thành viên
 
     public AddMemberView(String groupName, InterfaceClient clientServer) {
         initComponents();
+
 
         this.groupName = groupName;
         this.clientServer = clientServer;
@@ -31,10 +43,43 @@ public class AddMemberView extends JFrame implements Runnable {
         jPanel1.setBorder(new EmptyBorder(5, 10, 10, 10));
 
         addMemberBtn = new javax.swing.JButton();
+
+
         listClients = new Vector<>();
         listConnect.setListData(listClients);
 
+        Timer minuteur = new Timer();
+        TimerTask tache = new TimerTask() {
+            @Override
+            public void run() {
+                int[] indices = listConnect.getSelectedIndices();
+                model.clear();
+                listClients = ConnectDatabase.getAllUsernames();
+                int i=0;
+                while(i<listClients.size()){
+                    model.addElement(listClients.get(i));
+                    i++;
+                }
+                listConnect.setModel(model);
+                listConnect.setSelectedIndices(indices);
+            }
+        };
+        minuteur.schedule(tache,0,20000);
+
         this.setVisible(true);
+    }
+
+    private void addMember(String selectedUsername) {
+        if (selectedUsername != null) {
+            try {
+                clientServer.addMember(selectedUsername,groupName);
+                JOptionPane.showMessageDialog(this, "Add successfully", "Alert", JOptionPane.INFORMATION_MESSAGE);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a member first", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -60,6 +105,7 @@ public class AddMemberView extends JFrame implements Runnable {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+
         listConnect.setToolTipText("");
         jScrollPane1.setViewportView(listConnect);
 
@@ -129,6 +175,14 @@ public class AddMemberView extends JFrame implements Runnable {
         );
 
         pack();
+
+        addMemberBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedUsername = listConnect.getSelectedValue();
+                addMember(selectedUsername);
+            }
+        });
         setLocationRelativeTo(null);
     }
 

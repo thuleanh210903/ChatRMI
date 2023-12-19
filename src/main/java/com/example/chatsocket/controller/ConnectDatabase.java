@@ -10,6 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -144,29 +145,56 @@ public class ConnectDatabase {
 
     }
 
-    public static boolean createGroup(String groupName) {
-        boolean ck = false;
+    public static boolean createGroup(String groupName, String adminGroup) {
+        boolean success = false;
+        int userId = getUserIdByName(adminGroup);
+
         try {
-            Statement statement = getConnection().createStatement();
+            Connection connection = getConnection();
+
+            // Check if the group already exists
+            Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("SELECT * FROM `group` WHERE groupName='" + groupName + "'");
+
             if (result.next()) {
                 JOptionPane.showMessageDialog(null, "This group is already created.");
             } else {
-                Statement statement2 = getConnection().createStatement();
-                statement2.executeUpdate("INSERT INTO `group` (groupName) VALUES ('" + groupName + "')");
-                statement2.close();
-                JOptionPane.showMessageDialog(null, "Creation successful. Please add members!");
-                ck = true;
+                // Insert new group
+                Statement insertStatement = connection.createStatement();
+                insertStatement.executeUpdate("INSERT INTO `group` (groupName) VALUES ('" + groupName + "')", Statement.RETURN_GENERATED_KEYS);
+
+                // Retrieve the generated groupId
+                ResultSet generatedKeys = insertStatement.getGeneratedKeys();
+                int groupId = -1;
+                if (generatedKeys.next()) {
+                    groupId = generatedKeys.getInt(1);
+                }
+
+                insertStatement.close();
+
+                if (groupId != -1) {
+                    Date date = new Date();
+                    Timestamp joinedAt = new Timestamp(date.getTime());
+                    // Insert the adminGroup into the group_member table
+                    String insertQuery = "INSERT INTO `group_member` (groupId, user_id, joinedAt, admin) VALUES (" + groupId + ", '" + userId + "', '" + joinedAt + "',1)";
+                    statement.executeUpdate(insertQuery);
+
+                    JOptionPane.showMessageDialog(null, "Creation successful. Please add members!");
+                    success = true;
+                }
             }
+
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return ck;
+
+        return success;
     }
 
 
-    public static List<String> getAllUsernames() {
-        List<String> usernames = new ArrayList<>();
+    public static Vector<String> getAllUsernames() {
+        Vector<String> usernames = new Vector<>();
         try {
             Connection connection = getConnection();
 
@@ -186,6 +214,49 @@ public class ConnectDatabase {
             e.printStackTrace();
         }
         return usernames;
+    }
+
+
+    public static boolean addMember(String username, String groupName) {
+        boolean ck = false;
+        int userId = getUserIdByName(username);
+        int groupId = getGroupIdByName(groupName);
+        try {
+
+                Date date = new Date();
+                Timestamp joinedAt = new Timestamp(date.getTime());
+                Statement statement2 = getConnection().createStatement();
+                statement2.executeUpdate("INSERT INTO group_member(groupId,user_id,joinedAt) VALUES ('" + groupId + "', '" + userId + "', '" + joinedAt + "')");
+                statement2.close();
+                JOptionPane.showMessageDialog(null, "Registration successful. Please log in!");
+                ck = true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ck;
+    }
+
+
+    private static int getGroupIdByName(String name) {
+        int groupId = -1; //no user can be found
+        try{
+            Statement statement = getConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT groupId FROM `group` WHERE groupName = '" + name + "'");
+
+
+            if(resultSet.next()) {
+                groupId = resultSet.getInt("groupId");
+
+            }
+
+            resultSet.close();
+            statement.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return groupId;
+
     }
 
 }

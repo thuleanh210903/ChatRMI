@@ -17,9 +17,13 @@ import java.util.logging.Logger;
 public class AddGroupView extends JFrame {
     private InterfaceServer server;
     private InterfaceClient clientServer;
+    private String adminGroup;
 
-    public AddGroupView() {
+    public AddGroupView(String adminGroup) {
+
         initComponents();
+
+        this.adminGroup = adminGroup;
         this.setLocationRelativeTo(null);
 
         try {
@@ -29,6 +33,8 @@ public class AddGroupView extends JFrame {
             ex.printStackTrace(); // Print the stack trace for debugging
             System.out.println("Error: " + ex.getMessage());
         }
+
+        this.setVisible(true);
     }
 
     @SuppressWarnings("unchecked")
@@ -38,7 +44,7 @@ public class AddGroupView extends JFrame {
         groupNameField = new JTextField();
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Group");
+        setTitle("Group " + adminGroup);
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         setResizable(false);
 
@@ -106,7 +112,7 @@ public class AddGroupView extends JFrame {
         String nameGroup = groupNameField.getText();
         try{
             Group group = new Group(nameGroup);
-            clientServer.createGroup(group);
+            clientServer.createGroup(group, adminGroup);
             JOptionPane.showMessageDialog(this, "Create Group successfully");
 
             AddMemberView addMemberView = new AddMemberView(nameGroup, clientServer);
@@ -135,12 +141,7 @@ public class AddGroupView extends JFrame {
 //    }
 
 
-    public static void main(String args[]){
 
-        EventQueue.invokeLater(() -> {
-            new AddGroupView().setVisible(true);
-        });
-    }
     private JButton addGroupBtn;
     private JLabel groupNameLb;
     private JTextField groupNameField;

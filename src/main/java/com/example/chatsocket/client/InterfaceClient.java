@@ -12,7 +12,7 @@ import java.util.List;
 public interface InterfaceClient extends Remote{
     void registerUser(User user) throws RemoteException;
 
-    void createGroup(Group group) throws RemoteException;
+    void createGroup(Group group, String adminGroup) throws RemoteException;
 
     void retrieveMessage(String message) throws RemoteException;
 
@@ -30,5 +30,7 @@ public interface InterfaceClient extends Remote{
 
 
     void openChat() throws RemoteException;
+
+    void addMember(String username, String groupName) throws RemoteException;
 }
 

@@ -326,11 +326,13 @@ public class ChatView extends JFrame implements Runnable{
     }
 
     private void addGroupBtnActionPerform(ActionEvent e) {
-        AddGroupView addGroupView = new AddGroupView();
-        // Hiển thị AddGroupView
-        addGroupView.setVisible(true);
+            // Pass the 'name' variable to the AddGroupView constructor
+            AddGroupView addGroupView = new AddGroupView(name);
+//            addGroupView.setVisible(true);
+        }
 
-    }
+
+
 
     //send message
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {

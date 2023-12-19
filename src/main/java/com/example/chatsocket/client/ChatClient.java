@@ -12,11 +12,11 @@ import java.awt.event.MouseListener;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class ChatClient extends UnicastRemoteObject implements InterfaceClient{
     private final InterfaceServer server;
@@ -145,10 +145,6 @@ public class ChatClient extends UnicastRemoteObject implements InterfaceClient{
                     server.broadcastMessage(senderName + " : " + message, list);
                 }
 
-                // debug k thì println cái này server.getListClientByName(name) xem nó ra cái gì Thư
-
-
-                // Lưu thông điệp vào cơ sở dữ liệu cho từng người nhận
                 for (String recipient : list) {
                     String recipientName = recipient;
                     ConnectDatabase.sendMessage(message, senderName, recipientName, "private");
@@ -161,8 +157,8 @@ public class ChatClient extends UnicastRemoteObject implements InterfaceClient{
 
 
     @Override
-    public void createGroup(Group group) throws RemoteException{
-        ConnectDatabase.createGroup(group.getGroupName());
+    public void createGroup(Group group, String adminGroup) throws RemoteException{
+        ConnectDatabase.createGroup(group.getGroupName(), adminGroup);
     }
 
 
@@ -184,6 +180,11 @@ public class ChatClient extends UnicastRemoteObject implements InterfaceClient{
     public void openChat() throws RemoteException {
         input.setEditable(true);
         input.setEnabled(true);
+    }
+
+    @Override
+    public void addMember(String username, String groupName) throws RemoteException {
+        ConnectDatabase.addMember(username, groupName);
     }
 
 }
