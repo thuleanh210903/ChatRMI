@@ -233,6 +233,29 @@ public class ConnectDatabase {
         }
         return ck;
     }
+    public static void removeClient(String name) {
+        try {
+            Connection connection = getConnection();
+            int userId = getUserIdByName(name);
+
+            // Xóa người dùng khỏi bảng user
+            String deleteUserQuery = "DELETE FROM user WHERE user_id = ?";
+            PreparedStatement deleteStatement = connection.prepareStatement(deleteUserQuery);
+            deleteStatement.setInt(1, userId);
+            deleteStatement.executeUpdate();
+            deleteStatement.close();
+
+            // Xóa người dùng khỏi bảng group_member
+            String deleteGroupMemberQuery = "DELETE FROM group_member WHERE user_id = ?";
+            PreparedStatement deleteGroupMemberStatement = connection.prepareStatement(deleteGroupMemberQuery);
+            deleteGroupMemberStatement.setInt(1, userId);
+            deleteGroupMemberStatement.executeUpdate();
+            deleteGroupMemberStatement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     private static int getGroupIdByName(String name) {

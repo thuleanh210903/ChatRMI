@@ -156,6 +156,11 @@ public class ChatView extends JFrame implements Runnable{
         addGroupBtn = new JButton();
         stickerBtn = new JButton();
         stickerMenu = new JPopupMenu();
+        groupScrollPanel = new JScrollPane();
+        groupPanel = new JPanel();
+
+
+        groupScrollPanel.setViewportView(groupPanel);
 
 
         jMenuItem1.setText("Remove Users");
@@ -424,7 +429,7 @@ public class ChatView extends JFrame implements Runnable{
         editorPane.setEditorKit(kit);
         editorPane.setDocument(doc);
 //        URL baseUrl = getClass().getResource("/");
-        kit.getStyleSheet().addRule("body { margin: 0; padding: 0; } img { display: block; }");
+        kit.getStyleSheet().addRule("body { margin: 0; paddjaing: 0; } img { display: block; }");
         URL url = new URL("file:///E:/projects/ChatSocket/" + imagePath);
         try {
             kit.insertHTML(doc, doc.getLength(), "<img src='"+url+"' width='50' height='50'/>", 0, 0, null);
@@ -558,6 +563,8 @@ public class ChatView extends JFrame implements Runnable{
     private javax.swing.JList<String> listConnect;
     private javax.swing.JTextArea listMessage;
     private javax.swing.JPopupMenu stickerMenu = new JPopupMenu();
+    private javax.swing.JScrollPane groupScrollPanel;
+    private javax.swing.JPanel groupPanel;
 
     @Override
     public void run() {
