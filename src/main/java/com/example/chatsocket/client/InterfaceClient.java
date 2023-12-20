@@ -32,5 +32,7 @@ public interface InterfaceClient extends Remote{
     void openChat() throws RemoteException;
 
     void addMember(String username, String groupName) throws RemoteException;
+
+    void sendImageMessage(List<String> list, String imagePath) throws RemoteException;
 }
 

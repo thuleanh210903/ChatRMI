@@ -12,12 +12,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.Timer;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 
 public class ChatView extends JFrame implements Runnable{
@@ -138,7 +143,7 @@ public class ChatView extends JFrame implements Runnable{
         listConnectPanel = new javax.swing.JScrollPane();
         listConnect = new javax.swing.JList<>();
         inputMsgPanel = new javax.swing.JScrollPane();
-        inputMsg = new javax.swing.JTextArea();
+        inputMsg = new javax.swing.JEditorPane();
         btnSend = new javax.swing.JButton();
         listMessagePanel = new javax.swing.JScrollPane();
         listMessage = new javax.swing.JTextArea();
@@ -190,8 +195,8 @@ public class ChatView extends JFrame implements Runnable{
         listConnect.setToolTipText("");
         listConnectPanel.setViewportView(listConnect);
 
-        inputMsg.setColumns(20);
-        inputMsg.setRows(5);
+//        inputMsg.setColumns(20);
+//        inputMsg.setRows(5);
         inputMsg.setToolTipText("Enter your Message ...");
         inputMsg.setMargin(new java.awt.Insets(6, 0, 0, 16));
         inputMsgPanel.setViewportView(inputMsg);
@@ -252,10 +257,23 @@ public class ChatView extends JFrame implements Runnable{
         });
 
 
+        ArrayList<String> stickerPaths = new ArrayList<>(Arrays.asList(
+                "img/happy.png", "img/cry.png", "img/love.png", "img/sad.png",
+                "img/sticker1.png", "img/sticker2.png", "img/sticker3.png", "img/sticker4.png"
+        ));
+
         ArrayList<ImageIcon> stickerIcons = new ArrayList<>();
-// Thêm các biểu tượng sticker vào danh sách
-        stickerIcons.add(new ImageIcon("red_heart.png"));
-//        stickerIcons.add(new ImageIcon("path_to_sticker2.png"));
+        for (String path : stickerPaths) {
+            ImageIcon icon = new ImageIcon(path);
+            Image img = icon.getImage();
+            Image resizedImg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Resize the image to 50x50 pixels
+            ImageIcon resizedIcon = new ImageIcon(resizedImg);
+            resizedIcon.setDescription(path); // Set the description to the file path
+            stickerIcons.add(resizedIcon);
+        }
+
+
+
 
         stickerBtn.setIcon(new ImageIcon("img/icon.png"));
         stickerBtn.setToolTipText("upload icon");
@@ -267,17 +285,7 @@ public class ChatView extends JFrame implements Runnable{
         stickerBtn.setMargin(new Insets(0,0,0,0));
         stickerBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                JPopupMenu popupMenu = new JPopupMenu();
-                for (ImageIcon icon : stickerIcons) {
-                    JMenuItem menuItem = new JMenuItem(icon);
-                    menuItem.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("has image");
-                        }
-                    });
-                    popupMenu.add(menuItem);
-                }
-                popupMenu.show(stickerBtn, 0, stickerBtn.getHeight());
+                    stickerIconsBtnActionPerformed(evt, stickerIcons);
             }
         });
 
@@ -363,6 +371,67 @@ public class ChatView extends JFrame implements Runnable{
 
         pack();
         setLocationRelativeTo(null);
+    }
+
+    private void stickerIconsBtnActionPerformed(ActionEvent evt, ArrayList<ImageIcon> stickerIcons) {
+        JPopupMenu stickerMenu = new JPopupMenu();
+        for (ImageIcon icon : stickerIcons) {
+            JMenuItem menuItem = new JMenuItem(icon);
+            menuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    ImageIcon selectedIcon = (ImageIcon) ((JMenuItem) e.getSource()).getIcon();
+                    String imagePath = selectedIcon.getDescription();
+
+                    try {
+                        insertImageInTextArea(inputMsg, imagePath);
+                    } catch (MalformedURLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    btnSend.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                            btnSendImageActionPerformed(evt,imagePath);
+                        }
+                    });
+                }
+            });
+            stickerMenu.add(menuItem);
+        }
+        stickerMenu.show(stickerBtn, 0, stickerBtn.getHeight());
+    }
+
+    private void btnSendImageActionPerformed(java.awt.event.ActionEvent evt, String imagePath) {
+        if(!inputMsg.getText().equals("")) {
+            if(!inputMsg.getText().equals("Enter your Message ...")) {
+                try {
+                    client.sendImageMessage(listConnect.getSelectedValuesList(), imagePath); // Pass the image path to sendMessage
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+                inputMsg.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Please insert something to set your message", "Alert", JOptionPane.WARNING_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please insert something to send your message", "Alert", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+
+
+    private void insertImageInTextArea(JEditorPane editorPane, String imagePath) throws MalformedURLException {
+        HTMLEditorKit kit = new HTMLEditorKit();
+        HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument();
+        editorPane.setEditorKit(kit);
+        editorPane.setDocument(doc);
+//        URL baseUrl = getClass().getResource("/");
+        kit.getStyleSheet().addRule("body { margin: 0; padding: 0; } img { display: block; }");
+        URL url = new URL("file:///E:/projects/ChatSocket/" + imagePath);
+        try {
+            kit.insertHTML(doc, doc.getLength(), "<img src='"+url+"' width='50' height='50'/>", 0, 0, null);
+        } catch (BadLocationException | IOException ex) {
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
 
@@ -470,7 +539,7 @@ public class ChatView extends JFrame implements Runnable{
     }
 
     private javax.swing.JButton btnSend;
-    private javax.swing.JTextArea inputMsg;
+    private javax.swing.JEditorPane inputMsg;
     private javax.swing.JButton refreshBtn;
     private javax.swing.JButton addGroupBtn;
     private javax.swing.JButton stickerBtn;

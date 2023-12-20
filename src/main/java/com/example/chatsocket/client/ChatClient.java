@@ -21,12 +21,12 @@ import java.util.List;
 public class ChatClient extends UnicastRemoteObject implements InterfaceClient{
     private final InterfaceServer server;
     private final String name;
-    private final JTextArea input;
+    private final JEditorPane input;
     private final JTextArea output;
     private final JPanel jpanel;
 
 
-    public ChatClient(String name , InterfaceServer server,JTextArea jtext1,JTextArea jtext2,JPanel jpanel) throws RemoteException{
+    public ChatClient(String name , InterfaceServer server,JEditorPane jtext1,JTextArea jtext2,JPanel jpanel) throws RemoteException{
         this.name = name;
         this.server = server;
         this.input = jtext1;
@@ -102,26 +102,10 @@ public class ChatClient extends UnicastRemoteObject implements InterfaceClient{
         jpanel.revalidate();
     }
 
+    @Override
+    public void sendImageMessage(List<String> list, String imagePath) throws RemoteException {
 
-//    @Override
-//    public void sendMessage(List<String> list) {
-//        try {
-//            String message = name + " : " + input.getText();
-//            String senderName = name;
-////            server.broadcastMessage(name + " : " + input.getText(),list);
-//
-//            for (String recipient: list) {
-//                String recipientName = recipient;
-//
-//                if(senderName != null && recipientName !=null) {
-//                    server.broadcastMessage(senderName + " : " + message, list);
-//                    ConnectDatabase.sendMessage(message, senderName, recipientName, "private");
-//                }
-//            }
-//        } catch (RemoteException ex) {
-//            System.out.println("Error: " + ex.getMessage());
-//        }
-//    }
+    }
 
     @Override
     public void sendMessage(List<String> list) {
@@ -138,10 +122,10 @@ public class ChatClient extends UnicastRemoteObject implements InterfaceClient{
                         String recipientName = recipient;
                         ConnectDatabase.sendMessage(message, senderName, recipientName, "private");
                     }
-                    // Gửi tin nhắn đến tất cả client kết nối
+                    // Chat all
                     server.broadcastMessage(senderName + " : " + message, null);
                 } else {
-                    // Gửi tin nhắn chỉ đến các client được chọn
+                    // Chat 1-1
                     server.broadcastMessage(senderName + " : " + message, list);
                 }
 

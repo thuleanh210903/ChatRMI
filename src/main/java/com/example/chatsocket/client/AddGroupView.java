@@ -28,7 +28,7 @@ public class AddGroupView extends JFrame {
 
         try {
             server = (InterfaceServer) Naming.lookup("rmi://localhost:4321/remote");
-            clientServer = new ChatClient("YourClientName", server, new JTextArea(), new JTextArea(), new JPanel());
+            clientServer = new ChatClient("YourClientName", server, new JEditorPane(), new JTextArea(), new JPanel());
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
             ex.printStackTrace(); // Print the stack trace for debugging
             System.out.println("Error: " + ex.getMessage());
