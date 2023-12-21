@@ -24,6 +24,10 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
+// Import the necessary classes from the emoji-picker library
+import com.vdurmont.emoji.Emoji;
+import com.vdurmont.emoji.EmojiManager;
+import com.vdurmont.emoji.EmojiParser;
 
 public class ChatView extends JFrame implements Runnable{
     private ChatClient client;
@@ -130,7 +134,46 @@ public class ChatView extends JFrame implements Runnable{
         this.setVisible(true);
     }
 
+    private void showEmojiPicker() {
+        // Hiển thị danh sách emoji
+        Collection<Emoji> emojis = EmojiManager.getAll();
 
+        // Tạo cửa sổ chọn emoji
+        JPopupMenu emojiMenu = new JPopupMenu();
+
+        // Tạo một JScrollPane và thiết lập thanh cuộn theo chiều dọc
+//        JScrollPane scrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+//        emojiMenu.add(scrollPane);
+
+        for (Emoji emoji : emojis) {
+            JMenuItem emojiItem = createEmojiMenuItem(emoji);
+            emojiMenu.add(emojiItem);
+        }
+        emojiMenu.setPopupSize(200, 500);
+        emojiMenu.show(emojiPickerBtn, 0, emojiPickerBtn.getHeight());
+    }
+
+    private JMenuItem createEmojiMenuItem(Emoji emoji) {
+        // Lấy Unicode của emoji
+        String unicode = emoji.getUnicode();
+
+        // Tạo một JMenuItem với HTML để hiển thị emoji
+        JMenuItem emojiItem = new JMenuItem("<html><font color='black'>" + unicode + "</font></html>");
+        emojiItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                insertEmojiInTextArea(emoji);
+            }
+        });
+        return emojiItem;
+    }
+    private void insertEmojiInTextArea(Emoji emoji) {
+        // Chèn emoji vào vị trí con trỏ
+        String emojiString = emoji.getUnicode();
+        int caretPosition = inputMsg.getCaretPosition();
+        inputMsg.replaceSelection(emojiString);
+        inputMsg.setCaretPosition(caretPosition + emojiString.length());
+    }
 
     @SuppressWarnings("unchecked")
 
@@ -156,6 +199,9 @@ public class ChatView extends JFrame implements Runnable{
         addGroupBtn = new JButton();
         stickerBtn = new JButton();
         stickerMenu = new JPopupMenu();
+//        String str = "\uD83D\uDE03";
+//        String result = EmojiParser.parseToUnicode(str);
+        emojiPickerBtn = new JButton("result");
 
 
         jMenuItem1.setText("Remove Users");
@@ -289,7 +335,13 @@ public class ChatView extends JFrame implements Runnable{
             }
         });
 
-
+//        emojiPickerBtn.setIcon(new ImageIcon("img/icon.png"));
+        emojiPickerBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showEmojiPicker();
+            }
+        });
 
 
         jPanel1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
@@ -328,6 +380,7 @@ public class ChatView extends JFrame implements Runnable{
                                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                         .addComponent(uploadFileBtn, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
                                                         .addComponent(stickerBtn, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(emojiPickerBtn, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE) // Thêm nút emoji picker
                                                 ))
                                         .addComponent(sharedFileLb))
                                 .addGap(12, 12, 12)
@@ -364,6 +417,7 @@ public class ChatView extends JFrame implements Runnable{
                                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                 .addComponent(uploadFileBtn, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
                                                 .addComponent(stickerBtn, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(emojiPickerBtn, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
                                                 .addComponent(btnSend, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE))
                                         .addComponent(inputMsgPanel, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -558,6 +612,7 @@ public class ChatView extends JFrame implements Runnable{
     private javax.swing.JList<String> listConnect;
     private javax.swing.JTextArea listMessage;
     private javax.swing.JPopupMenu stickerMenu = new JPopupMenu();
+    private JButton emojiPickerBtn;
 
     @Override
     public void run() {

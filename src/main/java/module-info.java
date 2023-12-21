@@ -8,6 +8,7 @@ module com.example.chatsocket {
     requires java.rmi;
     requires java.sql;
     requires java.desktop;
+    requires emoji.java;
 
     opens com.example.chatsocket to javafx.fxml, org.controlsfx.controls, com.dlsc.formsfx, org.kordamp.bootstrapfx.core, com.almasb.fxgl.all;
     exports com.example.chatsocket;

@@ -16,9 +16,9 @@ import java.util.logging.Logger;
 
 public class ConnectDatabase {
     private static Connection conn;
-    private static String url = "jdbc:mysql://localhost:3306/chatsocket";
+    private static String url = "jdbc:mysql://localhost:3308/chatsocket";
     private static String user = "root";
-    private static String password = "admin";
+    private static String password = "1203";
 
     public static Connection getConnection() {
         if(conn == null){
