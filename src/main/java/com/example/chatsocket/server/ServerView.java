@@ -9,6 +9,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -20,7 +23,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileSystemView;
 
 
-public class ServerView extends JFrame{
+public class ServerView extends JFrame {
     private ChatClient client;
     private InterfaceServer server;
     private DefaultListModel<String> model = new DefaultListModel<>();
@@ -29,11 +32,12 @@ public class ServerView extends JFrame{
     private GroupLayout groupLayout;
     private ChatServer chatServer;
 
-
-
-    public ServerView(ChatServer chatServer) {
+    public ServerView(ChatServer chatServer) throws MalformedURLException, NotBoundException, RemoteException {
 
         this.chatServer = chatServer;
+
+        this.server = (InterfaceServer) Naming.lookup("rmi://localhost:4321/remote");
+
         initComponents();
 
 
@@ -100,7 +104,7 @@ public class ServerView extends JFrame{
         listConnectPanel = new javax.swing.JScrollPane();
         listConnect = new javax.swing.JList<>();
         serverLabel = new JLabel();
-        refreshBtn = new javax.swing.JButton();
+        deleteBtn = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         hostLabel = new JLabel();
 
@@ -155,12 +159,13 @@ public class ServerView extends JFrame{
         hostLabel.setFont(new Font("Dialog", 0, 16));
         hostLabel.setText("Host Name");
 
-        refreshBtn.setText("Refresh");
-        refreshBtn.setActionCommand("");
-        refreshBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        refreshBtn.addActionListener(new java.awt.event.ActionListener() {
+        deleteBtn.setText("Delete");
+        deleteBtn.setActionCommand("");
+        deleteBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        deleteBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-//                refreshBtnActionPerformed(evt);
+                String selectedUser = listConnect.getSelectedValue();
+                removeUser(selectedUser);
             }
         });
 
@@ -204,7 +209,7 @@ public class ServerView extends JFrame{
                                                 .addComponent(hostLabel)
                                         )
                                         .addComponent(listConnectPanel)
-                                        .addComponent(refreshBtn, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                                        .addComponent(deleteBtn, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
                                         )
                                 .addContainerGap(42, Short.MAX_VALUE))
         );
@@ -219,7 +224,7 @@ public class ServerView extends JFrame{
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(listConnectPanel, GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(refreshBtn)
+                                                .addComponent(deleteBtn)
                                         ))
                                 .addGap(16, 16, 16)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -233,14 +238,34 @@ public class ServerView extends JFrame{
         setLocationRelativeTo(null);
     }
 
+    private void removeUser(String selectedUser) {
+        if (selectedUser != null) {
+            if (JOptionPane.showConfirmDialog(new JFrame(),
+                    "Are you sure you want to delete this user ?", "Delete User?",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+                try {
+                    server.deleteClient(selectedUser);
+                    updateListClient(ConnectDatabase.getAllUsernames());
+                } catch (RemoteException ex) {
+                    System.out.println("Error: " + ex.getMessage());
+                }
+            }else{
 
-    //send message
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a member first", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
 
-//
-//    private void refreshBtnActionPerformed(java.awt.event.ActionEvent evt) {
-//        Thread thread = new Thread(this);
-//        thread.start();
-//    }
+    private void updateListClient(Vector<String> allUsernames) {
+        listClients = allUsernames;
+        model.clear();
+        for(String client: listClients){
+            model.addElement(client);
+        }
+        listConnect.setModel(model);
+    }
 
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -321,7 +346,7 @@ public class ServerView extends JFrame{
     }
 
 
-    private javax.swing.JButton refreshBtn;
+    private javax.swing.JButton deleteBtn;
     private JLabel hostLabel;
     private JLabel serverLabel;
     private javax.swing.JMenuItem jMenuItem1;
@@ -335,21 +360,18 @@ public class ServerView extends JFrame{
 
 
     public  void run() {
-
-
-
-//        try {
-//            model.clear();
-//            listClients = server.getListClientByName(name);
-//            int i=0;
-//            while(i<listClients.size()){
-//                model.addElement(listClients.get(i));
-//                i++;
-//            }
-//            listConnect.setModel(model);
-//        } catch (RemoteException ex) {
-//            System.out.println("Error: " + ex.getMessage());
-//        }
+        try {
+            model.clear();
+            listClients = server.getListClientByName(name);
+            int i=0;
+            while(i<listClients.size()){
+                model.addElement(listClients.get(i));
+                i++;
+            }
+            listConnect.setModel(model);
+        } catch (RemoteException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
 
     }
 }

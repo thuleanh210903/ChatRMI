@@ -2,6 +2,7 @@ package com.example.chatsocket.server;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
@@ -16,6 +17,8 @@ public class Main {
             System.out.println("Server Started ...");
         } catch (MalformedURLException | RemoteException ex) {
             System.out.println("Error: " + ex.getMessage());
+        } catch (NotBoundException e) {
+            throw new RuntimeException(e);
         }
     }
 }

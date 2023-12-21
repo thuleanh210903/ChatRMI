@@ -30,6 +30,8 @@ public interface InterfaceServer extends Remote{
 
     void removeClient(String clients) throws RemoteException;
 
+    void deleteClient(String client) throws RemoteException;
+
 
     void reactiveClient(List<String> clients) throws RemoteException;
 

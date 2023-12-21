@@ -130,7 +130,7 @@ public class ChatServer extends UnicastRemoteObject implements InterfaceServer{
 
 
     @Override
-    public synchronized void removeClient(String clients){
+    public synchronized void removeClient(String client){
         for(int j=0;j<this.clients.size();j++){
             try {
                 if(this.clients.get(j).getName().equals(clients)){
@@ -140,6 +140,12 @@ public class ChatServer extends UnicastRemoteObject implements InterfaceServer{
                 System.out.println("Error: " + ex.getMessage());
             }
         }
+
+    }
+
+    @Override
+    public synchronized void deleteClient(String clientName){
+        ConnectDatabase.removeClient(clientName);
     }
 
     @Override

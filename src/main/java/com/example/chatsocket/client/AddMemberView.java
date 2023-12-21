@@ -185,7 +185,7 @@ public class AddMemberView extends JFrame implements Runnable {
     }
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {
-        // Xử lý khi nút thêm thành viên được nhấn
+
     }
 
     private javax.swing.JButton addMemberBtn;

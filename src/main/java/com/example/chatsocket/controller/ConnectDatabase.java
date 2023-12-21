@@ -16,9 +16,9 @@ import java.util.logging.Logger;
 
 public class ConnectDatabase {
     private static Connection conn;
-    private static String url = "jdbc:mysql://localhost:3308/chatsocket";
+    private static String url = "jdbc:mysql://localhost:3306/chatsocket";
     private static String user = "root";
-    private static String password = "1203";
+    private static String password = "admin";
 
     public static Connection getConnection() {
         if(conn == null){
@@ -232,6 +232,29 @@ public class ConnectDatabase {
             e.printStackTrace();
         }
         return ck;
+    }
+    public static void removeClient(String name) {
+        try {
+            Connection connection = getConnection();
+            int userId = getUserIdByName(name);
+
+            // Xóa người dùng khỏi bảng user
+            String deleteUserQuery = "DELETE FROM user WHERE user_id = ?";
+            PreparedStatement deleteStatement = connection.prepareStatement(deleteUserQuery);
+            deleteStatement.setInt(1, userId);
+            deleteStatement.executeUpdate();
+            deleteStatement.close();
+
+            // Xóa người dùng khỏi bảng group_member
+            String deleteGroupMemberQuery = "DELETE FROM group_member WHERE user_id = ?";
+            PreparedStatement deleteGroupMemberStatement = connection.prepareStatement(deleteGroupMemberQuery);
+            deleteGroupMemberStatement.setInt(1, userId);
+            deleteGroupMemberStatement.executeUpdate();
+            deleteGroupMemberStatement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 
